@@ -1,0 +1,450 @@
+openapi: 3.0.0
+info:
+  title: Fitness Tracker API
+  description: REST API for managing workouts, exercises, and workout logs
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Missing required fields
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate and receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Missing credentials
+        '401':
+          description: Invalid email or password
+
+  /workouts:
+    post:
+      tags:
+        - Workouts
+      summary: Create a new workout
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Workout created
+        '400':
+          description: Missing required fields (name, date)
+        '401':
+          description: Unauthorized
+
+    get:
+      tags:
+        - Workouts
+      summary: Get all workouts for logged-in user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of workouts
+        '401':
+          description: Unauthorized
+
+  /workouts/{id}:
+    get:
+      tags:
+        - Workouts
+      summary: Get a specific workout
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Workout details
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout not found
+
+    put:
+      tags:
+        - Workouts
+      summary: Update a workout
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Workout updated
+        '400':
+          description: Invalid input (blank fields)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout not found
+
+    delete:
+      tags:
+        - Workouts
+      summary: Delete a workout
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Workout deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout not found
+
+  /exercises:
+    post:
+      tags:
+        - Exercises
+      summary: Create a new exercise
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                muscle_group:
+                  type: string
+                type:
+                  type: string
+                  enum: [STRENGTH, CARDIO, FLEXIBILITY, OTHER]
+                default_sets:
+                  type: integer
+                default_reps:
+                  type: integer
+      responses:
+        '201':
+          description: Exercise created
+        '400':
+          description: Missing required fields (name, muscle_group, type) or invalid type
+        '401':
+          description: Unauthorized
+
+    get:
+      tags:
+        - Exercises
+      summary: Get all exercises for logged-in user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of exercises
+        '401':
+          description: Unauthorized
+
+  /exercises/{id}:
+    get:
+      tags:
+        - Exercises
+      summary: Get a specific exercise
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Exercise details
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Exercise not found
+
+    put:
+      tags:
+        - Exercises
+      summary: Update an exercise
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                muscle_group:
+                  type: string
+                type:
+                  type: string
+                  enum: [STRENGTH, CARDIO, FLEXIBILITY, OTHER]
+                default_sets:
+                  type: integer
+                default_reps:
+                  type: integer
+      responses:
+        '200':
+          description: Exercise updated
+        '400':
+          description: Invalid input (blank fields or invalid type)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Exercise not found
+
+    delete:
+      tags:
+        - Exercises
+      summary: Delete an exercise
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Exercise deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Exercise not found
+
+  /workout-logs:
+    post:
+      tags:
+        - Workout Logs
+      summary: Add a workout log entry
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workout_id:
+                  type: integer
+                exercise_id:
+                  type: integer
+                sets:
+                  type: integer
+                reps:
+                  type: integer
+                weight:
+                  type: number
+                duration:
+                  type: integer
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Workout log created
+        '400':
+          description: Missing required fields (workout_id, exercise_id, sets, reps)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout or exercise not found
+
+    get:
+      tags:
+        - Workout Logs
+      summary: Get all workout logs for logged-in user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of workout logs
+        '401':
+          description: Unauthorized
+
+  /workout-logs/{id}:
+    get:
+      tags:
+        - Workout Logs
+      summary: Get a specific workout log
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Workout log details
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout log not found
+
+    put:
+      tags:
+        - Workout Logs
+      summary: Update a workout log
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sets:
+                  type: integer
+                reps:
+                  type: integer
+                weight:
+                  type: number
+                duration:
+                  type: integer
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Workout log updated
+        '400':
+          description: Invalid input (sets, reps, duration cannot be 0)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout log not found
+
+    delete:
+      tags:
+        - Workout Logs
+      summary: Delete a workout log
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Workout log deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Workout log not found
