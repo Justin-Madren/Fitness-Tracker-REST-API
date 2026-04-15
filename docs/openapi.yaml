@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: Local development server
+  - url: https://fitness-tracker-rest-api.onrender.com
+    description: Production server
 
 paths:
   /auth/signup:
