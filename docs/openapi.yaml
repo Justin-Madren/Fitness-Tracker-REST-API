@@ -9,6 +9,14 @@ servers:
   - url: https://fitness-tracker-rest-api.onrender.com/api
     description: Production server
 
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your JWT token without the "Bearer " prefix
+
 paths:
   /auth/signup:
     post:
